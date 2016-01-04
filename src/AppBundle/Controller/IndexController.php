@@ -8,12 +8,13 @@ class IndexController extends Controller
 {
     public function indexAction()
     {
-        if(!$this->getUser())
-            $this->redirect($this->generateUrl('fos_user_security_login'));
 
-        return $this->render('AppBundle:IndexController:index.html.twig', array(
+        if( !$this->getUser() )
+           return $this->redirect( $this->generateUrl( 'fos_user_security_login' ) );
+
+        return $this->render( 'AppBundle:IndexController:index.html.twig', [
             // ...
-        ));
+        ] );
     }
 
 }
