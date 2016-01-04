@@ -4,6 +4,8 @@
     <meta charset="UTF-8"/>
     <title>{% block title %}Welcome!{% endblock %}</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
           integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
@@ -38,8 +40,9 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 {% if not is_granted('ROLE_USER') %}
-                    <li class="active"><a href="{{ path('fos_user_security_login') }}">Login<span class="sr-only">(current)</span></a></li>
-                    {% else %}
+                    <li class="active"><a href="{{ path('fos_user_security_login') }}">Login<span class="sr-only">(current)</span></a>
+                    </li>
+                {% else %}
                     <li class=""><a href="{{ path('create') }}">Create meeting</a></li>
                 {% endif %}
             </ul>

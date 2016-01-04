@@ -6,7 +6,8 @@
     <h1>Invite team mates from {{ app.user.team.name }}</h1>
     {% for teammate in teammates %}
         {% if teammate is not same as(app.user) %}
-            <li>{{ teammate.username }} <a href="#" class="invite-user" data-user-id="{{ app.user.id }}">+</a></li>
+            <li>{{ teammate.username }} <a href="#" data-meeting-id={{ meeting }} class="invite-user"
+                                           data-user-id="{{ app.user.id }}">+</a></li>
         {% endif %}
     {% endfor %}
 {% endblock %}
@@ -17,10 +18,15 @@
         $( function() {
             $( '.invite-user' ).click( function() {
                 var userId = $( this ).data( 'user-id' );
+                var meetingId = $( this ).data( 'meeting-id' );
+                var that = $( this );
                 $.post( '/meeting/invite', {
-                    id: userId
-                }, function() {
-
+                    id        : userId,
+                    meeting_id: meetingId
+                }, function( response ) {
+                    if( response.message == "Success" ) {
+                        that.html( "<span class='fa fa-question'></span>" );
+                    }
                 } );
             } );
         } );
