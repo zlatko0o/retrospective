@@ -31,4 +31,22 @@ class User extends BaseUser
         // your own logic
     }
 
+	/**
+	 * @return \AppBundle\Entity\Team
+	 */
+	public function getTeam()
+	{
+		return $this->team;
+	}
+
+	/**
+	 * @param mixed $team
+	 */
+	public function setTeam( $team )
+	{
+		$this->team = $team;
+	}
+
+
+
 }

@@ -1,3 +1,12 @@
 index:
     path:     /
     defaults: { _controller: AppBundle:Index:index }
+
+create:
+    path:     /meeting/create
+    defaults: { _controller: AppBundle:Meetings:create }
+
+
+invite:
+    path:     /meeting/invite
+    defaults: { _controller: AppBundle:Meetings:invite }

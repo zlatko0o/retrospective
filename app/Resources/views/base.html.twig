@@ -39,8 +39,9 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 {% if not is_granted('ROLE_USER') %}
-                    <li class="active"><a href="{{ path('fos_user_security_login') }}">Login<span
-                                    class="sr-only">(current)</span></a></li>
+                    <li class="active"><a href="{{ path('fos_user_security_login') }}">Login<span class="sr-only">(current)</span></a></li>
+                    {% else %}
+                    <li class=""><a href="{{ path('create') }}">Create meeting</a></li>
                 {% endif %}
             </ul>
             {% if is_granted('ROLE_USER') %}

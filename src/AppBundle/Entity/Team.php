@@ -63,5 +63,23 @@ class Team
 	{
 		return $this->name;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getUsers()
+	{
+		return $this->users;
+	}
+
+	/**
+	 * @param mixed $users
+	 */
+	public function setUsers( $users )
+	{
+		$this->users = $users;
+	}
+
+
 }
 

@@ -1,0 +1,28 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}AppBundle:Meetings:create{% endblock %}
+
+{% block body %}
+    <h1>Invite team mates from {{ app.user.team.name }}</h1>
+    {% for teammate in teammates %}
+        {% if teammate is not same as(app.user) %}
+            <li>{{ teammate.username }} <a href="#" class="invite-user" data-user-id="{{ app.user.id }}">+</a></li>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
+
+
+{% block javascripts %}
+    <script>
+        $( function() {
+            $( '.invite-user' ).click( function() {
+                var userId = $( this ).data( 'user-id' );
+                $.post( '/meeting/invite', {
+                    id: userId
+                }, function() {
+
+                } );
+            } );
+        } );
+    </script>
+{% endblock %}
