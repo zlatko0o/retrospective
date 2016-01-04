@@ -18,10 +18,11 @@ class User extends BaseUser
      */
     protected $id;
 
-	/**
-	 * @var Team
-	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Team", inversedBy="id")
-	 */
+
+    /**
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Team", inversedBy="users")
+     * @ORM\JoinColumn(name="team_id", referencedColumnName="id")
+     */
 	protected $team;
 
     public function __construct()
