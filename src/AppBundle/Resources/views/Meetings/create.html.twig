@@ -20,6 +20,7 @@
                 var userId = $( this ).data( 'user-id' );
                 var meetingId = $( this ).data( 'meeting-id' );
                 var that = $( this );
+
                 $.post( '/meeting/invite', {
                     id        : userId,
                     meeting_id: meetingId
