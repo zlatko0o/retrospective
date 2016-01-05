@@ -56,7 +56,7 @@ class MeetingsController extends Controller
 
 		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
 
-		if( !$meeting || $meeting->getAuthor() != $this->getUser() )
+		if( !$meeting )
 		{
 			return $this->redirect( $this->generateUrl( 'index' ) );
 		}

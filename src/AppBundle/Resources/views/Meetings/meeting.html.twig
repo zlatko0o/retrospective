@@ -183,7 +183,9 @@
                     container.html( '' );
                     for( var id in data['jobs'][type] ) {
                         if( data['jobs'][type].hasOwnProperty( id ) ) {
-                            container.append( '<li class="list-group-item">' + data["jobs"][type][id] + '</li>' );
+                            var elm = $( '<li class="list-group-item"></li>' );
+                            container.append( elm );
+                            elm.text( data["jobs"][type][id] );
                         }
                     }
                 }
