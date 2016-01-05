@@ -40,19 +40,19 @@ class Meeting
 
 	/**
 	 * @var array
-	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\SafetyCheck", mappedBy="id")
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\SafetyCheck", mappedBy="meeting")
 	 */
 	protected $safetyChecks = null;
 
 	/**
 	 * @var array
-	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\JobDone", mappedBy="id")
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\JobDone", mappedBy="meeting")
 	 */
 	protected $jobDone = null;
 
 	/**
 	 * @var array
-	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Action", mappedBy="id")
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Action", mappedBy="meeting")
 	 */
 	protected $actions = null;
 

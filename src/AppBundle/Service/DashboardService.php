@@ -2,7 +2,9 @@
 
 namespace AppBundle\Service;
 
-class DashboardService
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+class DashboardService extends Controller
 {
 
 }
