@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Notes
+ * @ORM\Entity
  * @ORM\Table(name="notes")
  */
 class Note

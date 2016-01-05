@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Actions
+ * @ORM\Entity
  * @ORM\Table(name="job_done")
  */
 class JobDone

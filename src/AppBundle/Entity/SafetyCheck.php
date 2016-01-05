@@ -6,7 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Actions
- * @ORM\Table(name="actions")
+ * @ORM\Entity
+ * @ORM\Table(name="safety_check")
  */
 class SafetyCheck
 {
