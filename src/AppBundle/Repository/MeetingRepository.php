@@ -12,8 +12,31 @@ use Doctrine\ORM\EntityRepository;
  */
 class MeetingRepository extends EntityRepository
 {
+	/**
+	 * Get teammates
+	 *
+	 * @param User $user
+	 * @return mixed
+	 */
 	public function getTeamMates( User $user )
 	{
-		return $user->getTeam()->getUsers();
+		return $this->getEntityManager()
+					->getRepository( 'AppBundle:Team' )->getTeamMates( $user );
+	}
+
+	/**
+	 * Get last Meetings
+	 *
+	 * @param int $num
+	 * @return array
+	 */
+	public function getLastMeetings( $num )
+	{
+		return $this->getEntityManager()
+					->createQueryBuilder()
+					->orderBy( 'date', 'DESC' )
+					->setMaxResults( (int)$num )
+					->getQuery()
+					->getResult();
 	}
 }

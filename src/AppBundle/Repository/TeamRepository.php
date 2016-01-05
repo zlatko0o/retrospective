@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -11,4 +12,14 @@ use Doctrine\ORM\EntityRepository;
  */
 class TeamRepository extends EntityRepository
 {
+	/**
+	 * Get teammates
+	 *
+	 * @param User $user
+	 * @return mixed
+	 */
+	public function getTeamMates( User $user )
+	{
+		return $user->getTeam()->getUsers();
+	}
 }
