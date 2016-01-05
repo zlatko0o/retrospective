@@ -1,4 +1,10 @@
 services:
-  dashboard:
-    class: AppBundle\Service\DashboardService
-    arguments: []
+    note.repository:
+        class: Doctrine\ORM\EntityRepository
+        factory: ["@doctrine.orm.default_entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Note
+
+    note.service:
+        class: AppBundle\Service\NoteService
+        arguments: ["@note.repository", "@doctrine.orm.default_entity_manager"]

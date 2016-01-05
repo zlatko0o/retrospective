@@ -16,6 +16,16 @@ notes:
     path:     /notes
     defaults: { _controller: AppBundle:Notes:index }
 
+notes_save:
+    path:     /notes/save
+    defaults: { _controller: AppBundle:Notes:save }
+    methods: [POST]
+
+notes_reorder:
+    path:     /notes/reorder
+    defaults: { _controller: AppBundle:Notes:reorder }
+    methods: [POST]
+
 add_job:
     path:     /meeting/{id}/job/{type}
     defaults: { _controller: AppBundle:Meetings:addJob }

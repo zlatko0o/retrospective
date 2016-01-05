@@ -1,12 +1,59 @@
 {% extends "::base.html.twig" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Notes{% endblock %}
 
 {% block body %}
-<h1>Notes</h1>
-<div class="row">
-    <div class="col-lg-12">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h1>Notes</h1>
 
+            <form id="addNoteForm" method="post" action="{{ path('notes_save') }}">
+                <div class="form-group">
+                    <textarea class="form-control" id="noteText" rows="5" placeholder="Notes"></textarea>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+            <hr/>
+            <div class="note-content"></div>
+        </div>
     </div>
-</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $( '#addNoteForm' ).on( 'submit', function( e ) {
+            e.preventDefault();
+
+            var text = $( this ).find( '#noteText' ).val();
+
+            if( $.trim( text ).length < 1 )
+                return false;
+
+            $.ajax( {
+                url     : $( this ).attr( 'action' ),
+                type    : $( this ).attr( 'method' ),
+                data    : { noteText: text },
+                dataType: 'json'
+            } ).done( function( response ) {
+                if( response.status == 'success' ) {
+                    $( '.note-content' ).prepend( buildListing( [response.note] ) );
+                }
+            } )
+        } );
+
+        function buildListing( notes ) {
+            var html = '';
+            for( var i = 0; i < notes.length; i++ ) {
+                html += '<div class="note-draggable alert" role="alert" data-id="' + notes[i].id + '">' + notes[i].text + '</div>';
+            }
+
+            return html;
+        }
+
+        var notes = JSON.parse( '{{ notes|json_encode|escape('js') }}' );
+
+        $( '.note-content' ).html( buildListing( notes ) ).sortable();
+    </script>
 {% endblock %}

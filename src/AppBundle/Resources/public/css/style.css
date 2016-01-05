@@ -2,3 +2,8 @@
 {
     margin: 20px;
 }
+
+.note-draggable {
+    background-color: #464545;
+    cursor: move;
+}
