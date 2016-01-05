@@ -5,7 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Actions
+ * SafetyCheck
  *
  * @ORM\Entity
  * @ORM\Table(name="safety_check")
@@ -32,6 +32,13 @@ class SafetyCheck
 	 * @ORM\Column(name="level", type="integer", length=1)
 	 */
 	protected $level;
+
+	/**
+	 * @var Meeting
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Meeting", inversedBy="actions")
+	 * @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
+	 */
+	protected $meeting;
 
 	const LEVEL_TREACHEROUS = 0;
 	const LEVEL_DANGEROUS = 1;
@@ -104,5 +111,28 @@ class SafetyCheck
 	public function getLevel()
 	{
 		return $this->level;
+	}
+
+	/**
+	 * Set Meeting
+	 *
+	 * @param Meeting $meeting
+	 * @return Action
+	 */
+	public function setMeeting( $meeting )
+	{
+		$this->meeting = $meeting;
+
+		return $this;
+	}
+
+	/**
+	 * Get Meeting
+	 *
+	 * @return Meeting
+	 */
+	public function getMeeting()
+	{
+		return $this->meeting;
 	}
 }

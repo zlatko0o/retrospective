@@ -5,11 +5,11 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Actions
+ * Action
  * @ORM\Entity
  * @ORM\Table(name="actions")
  */
-class Actions
+class Action
 {
 	/**
 	 * @var int
@@ -30,6 +30,13 @@ class Actions
 	 * @ORM\Column(name="text", type="string", length=150)
 	 */
 	protected $text;
+
+	/**
+	 * @var Meeting
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Meeting", inversedBy="actions")
+	 * @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
+	 */
+	protected $meeting;
 
 	/**
 	 * Get id
@@ -55,7 +62,7 @@ class Actions
 	 * Set text
 	 *
 	 * @param string $text
-	 * @return Actions
+	 * @return Action
 	 */
 	public function setText( $text )
 	{
@@ -68,7 +75,7 @@ class Actions
 	 * Set checked
 	 *
 	 * @param boolean $checked
-	 * @return Actions
+	 * @return Action
 	 */
 	public function setChecked( $checked )
 	{
@@ -85,5 +92,28 @@ class Actions
 	public function getChecked()
 	{
 		return $this->checked;
+	}
+
+	/**
+	 * Set Meeting
+	 *
+	 * @param Meeting $meeting
+	 * @return Action
+	 */
+	public function setMeeting( $meeting )
+	{
+		$this->meeting = $meeting;
+
+		return $this;
+	}
+
+	/**
+	 * Get Meeting
+	 *
+	 * @return Meeting
+	 */
+	public function getMeeting()
+	{
+		return $this->meeting;
 	}
 }

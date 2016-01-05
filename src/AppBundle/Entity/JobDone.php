@@ -5,7 +5,7 @@ namespace AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Actions
+ * JobDone
  * @ORM\Entity
  * @ORM\Table(name="job_done")
  */
@@ -30,6 +30,13 @@ class JobDone
 	 * @ORM\Column(name="text", type="string", length=100)
 	 */
 	protected $text;
+
+	/**
+	 * @var Meeting
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Meeting", inversedBy="actions")
+	 * @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
+	 */
+	protected $meeting;
 
 	const TYPE_NEUTRAL = 0;
 	const TYPE_WELL = 1;
@@ -91,12 +98,35 @@ class JobDone
 	 * Set text
 	 *
 	 * @param string $text
-	 * @return Actions
+	 * @return JobDone
 	 */
 	public function setText( $text )
 	{
 		$this->text = $text;
 
 		return $this;
+	}
+
+	/**
+	 * Set Meeting
+	 *
+	 * @param Meeting $meeting
+	 * @return Action
+	 */
+	public function setMeeting( $meeting )
+	{
+		$this->meeting = $meeting;
+
+		return $this;
+	}
+
+	/**
+	 * Get Meeting
+	 *
+	 * @return Meeting
+	 */
+	public function getMeeting()
+	{
+		return $this->meeting;
 	}
 }
