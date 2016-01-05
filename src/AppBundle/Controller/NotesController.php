@@ -50,7 +50,37 @@ class NotesController extends Controller
 
 	public function reorderAction( Request $request )
 	{
-		$reorderId = $request->request->get( 'reorderId' );
-		$reorderId = $request->request->get( 'reorderId' );
+		$reorderId = $request->request->get( 'dragId' );
+		$nextId    = $request->request->get( 'nextId' );
+
+		if( !is_numeric( $reorderId ) || $reorderId < 1 )
+			return new JsonResponse( [
+				 'status' => 'error',
+				 'msg'    => 'Invalid note for reorder'
+			 ] );
+
+		if( !is_numeric( $nextId ) )
+			return new JsonResponse( [
+				 'status' => 'error',
+				 'msg'    => 'Invalid note'
+			 ] );
+
+		if( $nextId > 0 )
+		{
+			$noteService = $this->get( 'note.service' );
+			$currentUser = $this->getUser();
+			$notes       = $noteService->changePriority( $currentUser, $reorderId, $nextId );
+
+			return new JsonResponse( [
+				 'status' => 'success',
+				 'notes'  => $notes
+			 ] );
+		}
+
+		return new JsonResponse( [
+			 'status' => 'success',
+			 'notes'  => []
+		 ] );
+
 	}
 }

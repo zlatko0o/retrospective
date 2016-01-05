@@ -7,12 +7,12 @@ use Doctrine\ORM\EntityRepository;
 
 class NoteRepository extends EntityRepository
 {
-	public function decreasePriorityOfHigherThan( $priority, $offset )
+	public function decreasePriorityBetween( $priority, $offset )
 	{
 		return $this->changePriority( $priority, $offset, '-' );
 	}
 
-	public function increasePriorityOfHigherThan( $priority, $offset )
+	public function increasePriorityBetween( $priority, $offset )
 	{
 		return $this->changePriority( $priority, $offset, '+' );
 	}
