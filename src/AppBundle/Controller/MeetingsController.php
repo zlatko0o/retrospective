@@ -5,58 +5,53 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Invitation;
 use AppBundle\Entity\Meeting;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class MeetingsController extends Controller
 {
-	public function createAction()
+	public function createAction( Request $request )
 	{
 
-		$em = $this->getDoctrine()->getManager();
+		$errors = [ ];
 
-		$teamMates = $this->getDoctrine()->getRepository( 'AppBundle:Meeting' )->getTeamMates( $this->getUser() );
-		$meeting   = new Meeting();
-		$meeting->setDate( new \DateTime() );
-		$meeting->setFinished( false );
+		if( strtolower( $request->getMethod() ) == "post" )
+		{
+			$name = $request->request->get( 'name', false );
+			if( !$name )
+				$errors[] = "Field name is required!";
 
-		$em->persist( $meeting );
-		$em->flush();
+			if( empty( $errors ) )
+			{
+				$meeting = new Meeting();
+				$meeting->setDate( new \DateTime() );
+				$meeting->setFinished( false );
+				$meeting->setName( $name );
+				$meeting->setAuthor( $this->getUser() );
 
-		return $this->render( 'AppBundle:Meetings:create.html.twig', [
-			'teammates' => $teamMates,
-			'meeting'   => $meeting->getId()
-		] );
+				$em = $this->getDoctrine()->getManager();
+
+				$em->persist( $meeting );
+				$em->flush();
+
+				return $this->redirect( $this->generateUrl( 'meeting', [ 'id' => $meeting->getId() ] ) );
+			}
+		}
+
+		return $this->render( 'AppBundle:Meetings:create.html.twig', [ 'errors' => $errors ] );
 	}
 
-	public function inviteAction( Request $request )
+	public function meetingAction( Request $request, $id )
 	{
-		$doctrine = $this->getDoctrine();
-		$members  = $this->getUser()->getTeam()->getUsers()->toArray();
+		$em = $this->getDoctrine()->getManager();
 
-		$meetingId = $request->request->get( 'meeting_id' );
+		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
 
-		$meeting = $doctrine->getRepository( 'AppBundle:Meeting' )->find( $meetingId );
+		if( !$meeting || $meeting->getAuthor() != $this->getUser() )
+		{
+			return $this->redirect( $this->generateUrl( 'index' ) );
+		}
 
-		if( !$meeting || $meeting->getFinished() )
-			return new JsonResponse( [ 'message' => 'Meeting is finished' ] );
-
-		$user = $doctrine->getRepository( 'AppBundle:User' )
-						 ->findOneBy( [
-										  'id' => $request->request->get( 'id' )
-									  ] );
-		if( !$user || !in_array( $user, $members ) )
-			return new JsonResponse( [ 'message' => 'Invalid User' ] );
-
-		$invitation = new Invitation();
-		$invitation->setDate( new \DateTime() );
-		$invitation->setMeeting( $meeting );
-
-		$em = $doctrine->getManager();
-		$em->persist( $invitation );
-		$em->flush();
-
-		return new JsonResponse( [ 'message' => 'Success' ] );
+		return $this->render( 'AppBundle:Meetings:meeting.html.twig', [ 'meeting' => $meeting ] );
 	}
 
 }

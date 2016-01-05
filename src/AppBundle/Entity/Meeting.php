@@ -30,11 +30,18 @@ class Meeting
 	 * @ORM\Column(name="finished", type="boolean")
 	 */
 	private $finished;
+	
+	/**
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="meetings")
+	 * @ORM\JoinColumn(name="author_id", referencedColumnName="id")
+	 */
+	protected $author;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Invitation", mappedBy="meeting")
+	 * @var string
+	 * @ORM\Column(name="name", type="string", length=255)
 	 */
-	protected $invitations;
+	protected $name;
 
 	/**
 	 * Get id
@@ -106,6 +113,38 @@ class Meeting
 	public function setInvitations( $invitations )
 	{
 		$this->invitations = $invitations;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * @param string $name
+	 */
+	public function setName( $name )
+	{
+		$this->name = $name;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getAuthor()
+	{
+		return $this->author;
+	}
+
+	/**
+	 * @param mixed $author
+	 */
+	public function setAuthor( $author )
+	{
+		$this->author = $author;
 	}
 
 }

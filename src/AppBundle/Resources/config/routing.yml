@@ -7,6 +7,9 @@ create:
     defaults: { _controller: AppBundle:Meetings:create }
 
 
-invite:
-    path:     /meeting/invite
-    defaults: { _controller: AppBundle:Meetings:invite }
+meeting:
+    path:     /meeting/{id}
+    defaults: { _controller: AppBundle:Meetings:meeting }
+    methods:  [GET]
+
+

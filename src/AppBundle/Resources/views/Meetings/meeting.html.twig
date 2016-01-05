@@ -1,0 +1,113 @@
+{% extends "::base.html.twig" %}
+
+{% block title %}AppBundle:Meetings:create{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h1>{{ meeting.name }}</h1>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <!-- Default panel contents -->
+                        <div class="panel-heading">Safety Check</div>
+
+                        <!-- Table -->
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <td>Level</td>
+                                <td>Description</td>
+                                <td>Comment</td>
+                                <td>Votes</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>3</td>
+                                <td>Safe</td>
+                                <td>Almost everything is discussable without filtering</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Neutral</td>
+                                <td>Most things are discussable without filtering</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>Dangerous</td>
+                                <td>Many of my best ideas are not discussable</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>0</td>
+                                <td>Treacherous</td>
+                                <td>Most of my best ideas are not discussable</td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">ORID</h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul>
+                                <li><b>O</b> - objective questions (What do we know about this?)</li>
+                                <li><b>R</b> - reflective questions - (How do we feel about this?)</li>
+                                <li><b>I</b> - interpretive questions - (What does it mean to you/me/the organization?)
+                                </li>
+                                <li><b>D</b> - decisional questions - (What are we going to do?)</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">What we did well? <span class="fa fa-plus pull-right"></span></h3>
+                        </div>
+                        <div class="panel-body">
+                            <ul class="list-group">
+                                <li class="list-group-item"><input type="text" class="form-control"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">What we did well?</h3>
+                        </div>
+                        <div class="panel-body">
+                            Panel content
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">What we did well?</h3>
+                        </div>
+                        <div class="panel-body">
+                            Panel content
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
