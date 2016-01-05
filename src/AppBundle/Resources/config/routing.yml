@@ -40,5 +40,10 @@ add_vote:
     defaults: { _controller: AppBundle:Meetings:addVote }
 
 
+add_action:
+    path:     /meeting/{id}/vote
+    defaults: { _controller: AppBundle:Meetings:addAction }
+
+
 
 

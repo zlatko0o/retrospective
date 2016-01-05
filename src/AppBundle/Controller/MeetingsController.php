@@ -93,6 +93,31 @@ class MeetingsController extends Controller
 		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
 	}
 
+	public function addActionAction( Request $request, $id, $type )
+	{
+		$em = $this->getDoctrine()->getManager();
+
+		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
+		if( !$meeting || $meeting->getFinished() )
+			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
+
+		$text = $request->request->get( 'text', false );
+
+		if( $text )
+		{
+			$job = new JobDone();
+			$job->setText( $text );
+			$job->setType( $type );
+			$job->setMeeting( $meeting );
+
+			$em->persist( $job );
+			$em->flush();
+			$em->clear();
+		}
+
+		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
+	}
+
 	public function addVoteAction( Request $request, $id )
 	{
 		$em = $this->getDoctrine()->getManager();
@@ -153,6 +178,12 @@ class MeetingsController extends Controller
 		}
 
 		$return['votes'] = $votes;
+		$return['actions'] = [];
+		$actions = $meeting->getActions();
+
+		foreach($actions as $action){
+			$return['actions'][] = $action->getText();
+		}
 
 		return $return;
 	}
