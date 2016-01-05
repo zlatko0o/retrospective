@@ -35,7 +35,7 @@ class SafetyCheck
 
 	/**
 	 * @var Meeting
-	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Meeting", inversedBy="actions")
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Meeting", inversedBy="safetyChecks")
 	 * @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
 	 */
 	protected $meeting;

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Notes
  * @ORM\Entity
  * @ORM\Table(name="notes")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\NoteRepository")
  */
 class Note
 {
@@ -68,7 +69,7 @@ class Note
      * Set text
      *
      * @param string $text
-     * @return Notes
+     * @return Note
      */
     public function setText($text)
     {

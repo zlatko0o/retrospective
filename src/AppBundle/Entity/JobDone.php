@@ -33,7 +33,7 @@ class JobDone
 
 	/**
 	 * @var Meeting
-	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Meeting", inversedBy="actions")
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Meeting", inversedBy="jobDone")
 	 * @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
 	 */
 	protected $meeting;

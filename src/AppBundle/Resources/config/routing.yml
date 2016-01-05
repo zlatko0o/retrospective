@@ -12,4 +12,8 @@ meeting:
     defaults: { _controller: AppBundle:Meetings:meeting }
     methods:  [GET]
 
+notes:
+    path:     /notes
+    defaults: { _controller: AppBundle:Notes:index }
+
 
