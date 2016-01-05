@@ -39,4 +39,16 @@ class MeetingRepository extends EntityRepository
 					->getQuery()
 					->getResult();
 	}
+
+	public function getAll( $page = 1, $pageSize = 10 )
+	{
+		if( $page < 1 )
+			$page = 1;
+
+		return $this->createQueryBuilder( 'q' )
+					->setFirstResult( $pageSize * ( $page - 1 ) )
+					->setMaxResults( $pageSize )
+					->getQuery()
+					->getResult();
+	}
 }

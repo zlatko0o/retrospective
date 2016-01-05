@@ -26,7 +26,7 @@ class Notification
 	private $dateCreated;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
+	 * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="notifications")
 	 * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
 	 */
 	protected $user;

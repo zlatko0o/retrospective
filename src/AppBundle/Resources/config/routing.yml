@@ -12,4 +12,15 @@ meeting:
     defaults: { _controller: AppBundle:Meetings:meeting }
     methods:  [GET]
 
+add_job:
+    path:     /meeting/{id}/job/{type}
+    defaults: { _controller: AppBundle:Meetings:addJob }
+    methods: [POST]
+
+get_jobs:
+    path:     /meeting/{id}/job
+    defaults: { _controller: AppBundle:Meetings:getJobs }
+
+
+
 

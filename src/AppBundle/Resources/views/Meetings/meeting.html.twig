@@ -1,6 +1,6 @@
 {% extends "::base.html.twig" %}
 
-{% block title %}AppBundle:Meetings:create{% endblock %}
+{% block title %}{{ meeting.name }}{% endblock %}
 
 {% block body %}
     <div class="row">
@@ -75,34 +75,61 @@
 
             <div class="row">
                 <div class="col-md-4">
-                    <div class="panel panel-default">
+                    <div class="panel panel-success">
                         <div class="panel-heading">
                             <h3 class="panel-title">What we did well? <span class="fa fa-plus pull-right"></span></h3>
                         </div>
                         <div class="panel-body">
-                            <ul class="list-group">
-                                <li class="list-group-item"><input type="text" class="form-control"></li>
+                            <ul class="list-group"
+                                id="items-type-{{ constant('AppBundle\\Entity\\JobDone::TYPE_WELL') }}">
+                                {% if jobs[constant('AppBundle\\Entity\\JobDone::TYPE_WELL')] is defined %}
+                                    {% for job in jobs[constant('AppBundle\\Entity\\JobDone::TYPE_WELL')] %}
+                                        <li class="list-group-item">{{ job }}</li>
+                                    {% endfor %}
+                                {% endif %}
                             </ul>
+                            <input type="text" class="form-control addJob"
+                                   data-type="{{ constant('AppBundle\\Entity\\JobDone::TYPE_WELL') }}">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="panel panel-default">
+                    <div class="panel panel-danger">
                         <div class="panel-heading">
-                            <h3 class="panel-title">What we did well?</h3>
+                            <h3 class="panel-title">What should we have done better? <span
+                                        class="fa fa-plus pull-right"></span></h3>
                         </div>
                         <div class="panel-body">
-                            Panel content
+                            <ul class="list-group"
+                                id="items-type-{{ constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL') }}">
+                                {% if jobs[constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL')] is defined %}
+                                    {% for job in jobs[constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL')] %}
+                                        <li class="list-group-item">{{ job }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                            <input type="text" class="form-control addJob"
+                                   data-type="{{ constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL') }}">
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="panel panel-default">
+                    <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h3 class="panel-title">What we did well?</h3>
+                            <h3 class="panel-title">What we did (no judgment) <span
+                                        class="fa fa-plus pull-right"></span></h3>
                         </div>
                         <div class="panel-body">
-                            Panel content
+                            <ul class="list-group"
+                                id="items-type-{{ constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL') }}">
+                                {% if jobs[constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL')] is defined %}
+                                    {% for job in jobs[constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL')] %}
+                                        <li class="list-group-item">{{ job }}</li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                            <input type="text" class="form-control addJob"
+                                   data-type="{{ constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL') }}">
                         </div>
                     </div>
                 </div>
@@ -110,4 +137,40 @@
             </div>
         </div>
     </div>
+
+    <script>
+
+        function fillData( data ) {
+            for( var type in data ) {
+                if( data.hasOwnProperty( type ) ) {
+                    var container = $( '#items-type-' + type );
+                    container.html( '' );
+                    for( var id in data[type] ) {
+                        if( data[type].hasOwnProperty( id ) ) {
+                            container.append( '<li class="list-group-item">' + data[type][id] + '</li>' );
+                        }
+                    }
+                }
+            }
+        }
+
+        $( function() {
+            $( '.addJob' ).keyup( function( e ) {
+                var that = $( this );
+                if( e.keyCode == 13 ) {
+                    var type = $( this ).data( 'type' );
+                    $.post( '/meeting/{{ meeting.id }}/job/' + type, {'text': that.val()}, function( data ) {
+                        that.val( '' );
+                        fillData( data.data );
+                    } );
+                }
+            } );
+
+            setInterval( function() {
+                $.get( '/meeting/{{ meeting.id }}/job', function( response ) {
+                    fillData( response.data );
+                } );
+            }, 2000 )
+        } )
+    </script>
 {% endblock %}
