@@ -21,9 +21,13 @@ add_job:
     defaults: { _controller: AppBundle:Meetings:addJob }
     methods: [POST]
 
-get_jobs:
-    path:     /meeting/{id}/job
-    defaults: { _controller: AppBundle:Meetings:getJobs }
+get_data:
+    path:     /meeting/{id}/data
+    defaults: { _controller: AppBundle:Meetings:getData }
+
+add_vote:
+    path:     /meeting/{id}/vote
+    defaults: { _controller: AppBundle:Meetings:addVote }
 
 
 

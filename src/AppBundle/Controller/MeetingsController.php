@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Invitation;
 use AppBundle\Entity\JobDone;
 use AppBundle\Entity\Meeting;
+use AppBundle\Entity\SafetyCheck;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -60,7 +61,11 @@ class MeetingsController extends Controller
 			return $this->redirect( $this->generateUrl( 'index' ) );
 		}
 
-		return $this->render( 'AppBundle:Meetings:meeting.html.twig', [ 'meeting' => $meeting, 'jobs' => $this->getData( $meeting ) ] );
+		return $this->render( 'AppBundle:Meetings:meeting.html.twig', [
+			'meeting' => $meeting,
+			'data'    => $this->getData( $meeting ),
+			'canVote' => $this->getUserVote( $meeting )
+		] );
 	}
 
 	public function addJobAction( Request $request, $id, $type )
@@ -71,19 +76,47 @@ class MeetingsController extends Controller
 		if( !$meeting || $meeting->getFinished() )
 			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
 
-		$job = new JobDone();
-		$job->setText( $request->request->get( 'text' ) );
-		$job->setType( $type );
-		$job->setMeeting( $meeting );
+		$text = $request->request->get( 'text', false );
 
-		$em->persist( $job );
-		$em->flush();
-		$em->clear();
+		if( $text )
+		{
+			$job = new JobDone();
+			$job->setText( $text );
+			$job->setType( $type );
+			$job->setMeeting( $meeting );
+
+			$em->persist( $job );
+			$em->flush();
+			$em->clear();
+		}
 
 		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
 	}
 
-	public function getJobsAction( Request $request, $id )
+	public function addVoteAction( Request $request, $id )
+	{
+		$em = $this->getDoctrine()->getManager();
+
+		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
+		if( !$meeting || $meeting->getFinished() )
+			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
+
+		if( $this->getUserVote( $meeting ) )
+		{
+			$sc = new SafetyCheck();
+			$sc->setMeeting( $meeting );
+			$sc->setUser( $this->getUser() );
+			$sc->setLevel( $request->request->get( 'level' ) );
+
+			$em->persist( $sc );
+			$em->flush();
+			$em->clear();
+		}
+
+		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
+	}
+
+	public function getDataAction( Request $request, $id )
 	{
 		$em = $this->getDoctrine()->getManager();
 
@@ -94,20 +127,45 @@ class MeetingsController extends Controller
 		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
 	}
 
-	public function getData( $meeting )
+	public function getData( Meeting $meeting )
+	{
+		$jobs   = $meeting->getJobDone();
+		$return = [ ];
+
+		foreach( $jobs as $job )
+		{
+			$return['jobs'][ $job->getType() ][] = $job->getText();
+		}
+
+		$alreadyVoted = $meeting->getSafetyChecks();
+
+		$votes = [
+			SafetyCheck::LEVEL_DANGEROUS   => 0,
+			SafetyCheck::LEVEL_NEUTRAL     => 0,
+			SafetyCheck::LEVEL_SAFE        => 0,
+			SafetyCheck::LEVEL_SECURE      => 0,
+			SafetyCheck::LEVEL_TREACHEROUS => 0,
+		];
+
+		foreach( $alreadyVoted as $sf )
+		{
+			$votes[ $sf->getLevel() ]++;
+		}
+
+		$return['votes'] = $votes;
+
+		return $return;
+	}
+
+	public function getUserVote( $meeting )
 	{
 		$em = $this->getDoctrine()->getManager();
 
-		$data   = $em->getRepository( 'AppBundle:JobDone' )->findBy( [ 'meeting' => $meeting->getId() ] );
-		$return = [ ];
-
-		foreach( $data as $job )
-		{
-			$return[ $job->getType() ][] = $job->getText();
-		}
-
-		return $return;
-
+		return !(bool)$em->getRepository( 'AppBundle:SafetyCheck' )
+						 ->findOneBy( [
+										  'meeting' => $meeting->getId(),
+										  'user'    => $this->getUser()->getId()
+									  ] );
 	}
 
 }

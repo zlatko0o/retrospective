@@ -26,28 +26,64 @@
                             </thead>
                             <tbody>
                             <tr>
+                                <td>4</td>
+                                <td>Secure</td>
+                                <td>Everything is discussable without filtering</td>
+                                <td id="votes-type-{{ constant('\\AppBundle\\Entity\\SafetyCheck::LEVEL_SECURE') }}">
+                                    <span id="vote-numbers-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_SECURE') }}">{{ data['votes'][constant('\\AppBundle\\Entity\\SafetyCheck::LEVEL_SECURE')] }}</span>
+                                    {% if canVote %}
+                                        &nbsp; <span class="fa fa-plus vote"
+                                                     data-level="{{ constant('\\AppBundle\\Entity\\SafetyCheck::LEVEL_SECURE') }}"></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
                                 <td>3</td>
                                 <td>Safe</td>
                                 <td>Almost everything is discussable without filtering</td>
-                                <td></td>
+                                <td id="votes-type-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_SAFE') }}">
+                                    <span id="vote-numbers-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_SAFE') }}">{{ data['votes'][constant('AppBundle\\Entity\\SafetyCheck::LEVEL_SAFE')] }}</span>
+                                    {% if canVote %}
+                                        &nbsp; <span class="fa fa-plus vote"
+                                                     data-level="{{ constant('\\AppBundle\\Entity\\SafetyCheck::LEVEL_SAFE') }}"></span>
+                                    {% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <td>2</td>
                                 <td>Neutral</td>
                                 <td>Most things are discussable without filtering</td>
-                                <td></td>
+                                <td id="votes-type-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_NEUTRAL') }}">
+                                    <span id="vote-numbers-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_NEUTRAL') }}">{{ data['votes'][constant('AppBundle\\Entity\\SafetyCheck::LEVEL_NEUTRAL')] }}</span>
+                                    {% if canVote %}
+                                        &nbsp; <span class="fa fa-plus vote"
+                                                     data-level="{{ constant('\\AppBundle\\Entity\\SafetyCheck::LEVEL_NEUTRAL') }}"></span>
+                                    {% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <td>1</td>
                                 <td>Dangerous</td>
                                 <td>Many of my best ideas are not discussable</td>
-                                <td></td>
+                                <td id="votes-type-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_DANGEROUS') }}">
+                                    <span id="vote-numbers-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_DANGEROUS') }}">{{ data['votes'][constant('AppBundle\\Entity\\SafetyCheck::LEVEL_DANGEROUS')] }}</span>
+                                    {% if canVote %}
+                                        &nbsp; <span class="fa fa-plus vote"
+                                                     data-level="{{ constant('\\AppBundle\\Entity\\SafetyCheck::LEVEL_DANGEROUS') }}"></span>
+                                    {% endif %}
+                                </td>
                             </tr>
                             <tr>
                                 <td>0</td>
                                 <td>Treacherous</td>
                                 <td>Most of my best ideas are not discussable</td>
-                                <td></td>
+                                <td id="votes-type-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_TREACHEROUS') }}">
+                                    <span id="vote-numbers-{{ constant('AppBundle\\Entity\\SafetyCheck::LEVEL_TREACHEROUS') }}">{{ data['votes'][constant('AppBundle\\Entity\\SafetyCheck::LEVEL_TREACHEROUS')] }}</span>
+                                    {% if canVote %}
+                                        &nbsp; <span class="fa fa-plus vote"
+                                                     data-level="{{ constant('\\AppBundle\\Entity\\SafetyCheck::LEVEL_TREACHEROUS') }}"></span>
+                                    {% endif %}
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -82,8 +118,8 @@
                         <div class="panel-body">
                             <ul class="list-group"
                                 id="items-type-{{ constant('AppBundle\\Entity\\JobDone::TYPE_WELL') }}">
-                                {% if jobs[constant('AppBundle\\Entity\\JobDone::TYPE_WELL')] is defined %}
-                                    {% for job in jobs[constant('AppBundle\\Entity\\JobDone::TYPE_WELL')] %}
+                                {% if data['jobs'][constant('AppBundle\\Entity\\JobDone::TYPE_WELL')] is defined %}
+                                    {% for job in data['jobs'][constant('AppBundle\\Entity\\JobDone::TYPE_WELL')] %}
                                         <li class="list-group-item">{{ job }}</li>
                                     {% endfor %}
                                 {% endif %}
@@ -102,8 +138,8 @@
                         <div class="panel-body">
                             <ul class="list-group"
                                 id="items-type-{{ constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL') }}">
-                                {% if jobs[constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL')] is defined %}
-                                    {% for job in jobs[constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL')] %}
+                                {% if data['jobs'][constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL')] is defined %}
+                                    {% for job in data['jobs'][constant('AppBundle\\Entity\\JobDone::TYPE_NOTWELL')] %}
                                         <li class="list-group-item">{{ job }}</li>
                                     {% endfor %}
                                 {% endif %}
@@ -122,8 +158,8 @@
                         <div class="panel-body">
                             <ul class="list-group"
                                 id="items-type-{{ constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL') }}">
-                                {% if jobs[constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL')] is defined %}
-                                    {% for job in jobs[constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL')] %}
+                                {% if data['jobs'][constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL')] is defined %}
+                                    {% for job in data['jobs'][constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL')] %}
                                         <li class="list-group-item">{{ job }}</li>
                                     {% endfor %}
                                 {% endif %}
@@ -141,17 +177,23 @@
     <script>
 
         function fillData( data ) {
-            for( var type in data ) {
-                if( data.hasOwnProperty( type ) ) {
+            for( var type in data['jobs'] ) {
+                if( data['jobs'].hasOwnProperty( type ) ) {
                     var container = $( '#items-type-' + type );
                     container.html( '' );
-                    for( var id in data[type] ) {
-                        if( data[type].hasOwnProperty( id ) ) {
-                            container.append( '<li class="list-group-item">' + data[type][id] + '</li>' );
+                    for( var id in data['jobs'][type] ) {
+                        if( data['jobs'][type].hasOwnProperty( id ) ) {
+                            container.append( '<li class="list-group-item">' + data["jobs"][type][id] + '</li>' );
                         }
                     }
                 }
             }
+            for( var level in data['votes'] ) {
+                if( data['votes'].hasOwnProperty( level ) ) {
+                    $( '#vote-numbers-' + level ).html( data['votes'][level] );
+                }
+            }
+
         }
 
         $( function() {
@@ -166,8 +208,16 @@
                 }
             } );
 
+            $( '.vote' ).click( function() {
+                var level = $( this ).data( 'level' );
+                $.post( ' /meeting/{{ meeting.id }}/vote', {level: level}, function( data ) {
+                    $( '.vote' ).remove();
+                    fillData( data.data );
+                } );
+            } );
+
             setInterval( function() {
-                $.get( '/meeting/{{ meeting.id }}/job', function( response ) {
+                $.get( '/meeting/{{ meeting.id }}/data', function( response ) {
                     fillData( response.data );
                 } );
             }, 2000 )
