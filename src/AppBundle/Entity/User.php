@@ -12,12 +12,12 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User extends BaseUser
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+	/**
+	 * @ORM\Id
+	 * @ORM\Column(type="integer")
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 */
+	protected $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Team", inversedBy="users")
@@ -25,6 +25,18 @@ class User extends BaseUser
      */
 	protected $team;
 
+	/**
+	 * @var array
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Meeting", mappedBy="author")
+	 */
+	protected $meetings;
+	
+	/**
+	 * @var array
+	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Notification", mappedBy="user")
+	 */
+	protected $notifications;
+	
 	/**
 	 * @ORM\OneToMany(targetEntity="AppBundle\Entity\Note", mappedBy="user")
 	 */
@@ -45,6 +57,14 @@ class User extends BaseUser
 		$this->notes        = new ArrayCollection();
 		$this->safetyChecks = new ArrayCollection();
     }
+	
+	/**
+	 * @return mixed
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
 
 	/**
 	 * @return \AppBundle\Entity\Team
@@ -62,6 +82,38 @@ class User extends BaseUser
 		$this->team = $team;
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getMeetings()
+	{
+		return $this->meetings;
+	}
+
+	/**
+	 * @param array $meetings
+	 */
+	public function setMeetings( $meetings )
+	{
+		$this->meetings = $meetings;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getNotifications()
+	{
+		return $this->notifications;
+	}
+
+	/**
+	 * @param array $notifications
+	 */
+	public function setNotifications( $notifications )
+	{
+		$this->notifications = $notifications;
+	}
+	
 	/**
 	 * Add notes
 	 *
@@ -127,7 +179,5 @@ class User extends BaseUser
 	{
 		return $this->safetyChecks;
 	}
-
-
 
 }

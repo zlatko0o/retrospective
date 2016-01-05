@@ -3,33 +3,23 @@
 {% block title %}AppBundle:Meetings:create{% endblock %}
 
 {% block body %}
-    <h1>Invite team mates from {{ app.user.team.name }}</h1>
-    {% for teammate in teammates %}
-        {% if teammate is not same as(app.user) %}
-            <li>{{ teammate.username }} <a href="#" data-meeting-id={{ meeting }} class="invite-user"
-                                           data-user-id="{{ app.user.id }}">+</a></li>
-        {% endif %}
-    {% endfor %}
-{% endblock %}
-
-
-{% block javascripts %}
-    <script>
-        $( function() {
-            $( '.invite-user' ).click( function() {
-                var userId = $( this ).data( 'user-id' );
-                var meetingId = $( this ).data( 'meeting-id' );
-                var that = $( this );
-
-                $.post( '/meeting/invite', {
-                    id        : userId,
-                    meeting_id: meetingId
-                }, function( response ) {
-                    if( response.message == "Success" ) {
-                        that.html( "<span class='fa fa-question'></span>" );
-                    }
-                } );
-            } );
-        } );
-    </script>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <h1>Create meeting for {{ app.user.team.name }}</h1>
+            {% if errors %}
+                {% for error in errors %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+            <form method="post">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Name</label>
+                    <input name="name" value="Retrospective {{ "now"|date("m/d/Y") }}" type="text" class="form-control"
+                           id="name"
+                           placeholder="Name">
+                </div>
+                <button type="submit" class="btn btn-success">Create</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}
