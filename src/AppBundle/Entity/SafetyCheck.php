@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Actions
+ *
  * @ORM\Entity
  * @ORM\Table(name="safety_check")
  */
@@ -79,14 +80,16 @@ class SafetyCheck
 	 */
 	public function setLevel( $level )
 	{
-		if( $level != self::LEVEL_TREACHEROUS
-			&& $level != self::LEVEL_DANGEROUS
-			&& $level != self::LEVEL_NEUTRAL
-			&& $level != self::LEVEL_SAFE
-			&& $level != self::LEVEL_SECURE )
-		{
+		$levels = [
+			self::LEVEL_TREACHEROUS,
+			self::LEVEL_DANGEROUS,
+			self::LEVEL_NEUTRAL,
+			self::LEVEL_SAFE,
+			self::LEVEL_SECURE
+		];
+
+		if( !in_array( $level, $levels ) )
 			$level = self::LEVEL_NEUTRAL;
-		}
 
 		$this->level = $level;
 

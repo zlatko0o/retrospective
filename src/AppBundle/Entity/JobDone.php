@@ -53,7 +53,13 @@ class JobDone
 	 */
 	public function setType( $type )
 	{
-		if( $type != self::TYPE_NEUTRAL && $type != self::TYPE_WELL && $type != self::TYPE_NOTWELL )
+		$types = [
+			self::TYPE_NEUTRAL,
+			self::TYPE_WELL,
+			self::TYPE_NOTWELL
+		];
+
+		if( !in_array($type , $types) )
 			$type = self::TYPE_NEUTRAL;
 
 		$this->type = $type;
