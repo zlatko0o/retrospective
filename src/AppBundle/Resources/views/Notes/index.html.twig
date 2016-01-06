@@ -10,7 +10,7 @@
 
             <form id="addNoteForm" method="post" action="{{ path('notes_save') }}">
                 <div class="form-group">
-                    <textarea class="form-control" id="noteText" name="noteText" rows="5" placeholder="Notes"></textarea>
+                    <textarea class="form-control" id="noteText" name="noteText" rows="5" placeholder="Notes..."></textarea>
                 </div>
                 <button type="submit" class="btn btn-default">Submit</button>
             </form>
@@ -54,7 +54,7 @@
         function buildListing( notes ) {
             var html = '';
             for( var i = 0; i < notes.length; i++ ) {
-                html += '<div class="note-draggable alert" role="alert" data-id="' + notes[i].id + '">' + notes[i].text;
+                html += '<div class="note-draggable alert" role="alert" data-id="' + notes[i].id + '"><span class="note-text">' + notes[i].text + '</span>';
                 html += '<span class="delete"><a href="{{ path('notes_delete') }}"><i class="fa fa-remove"></i></a></span></div>';
             }
 
@@ -100,8 +100,6 @@
                 } ).done( function( response ) {
                     if( response.status != 'success' ) {
                         contentObj.sortable( 'cancel' );
-                    }
-                    else {
                         addErrorMessage( action_id, response.msg );
                     }
                 } ).fail( function() {

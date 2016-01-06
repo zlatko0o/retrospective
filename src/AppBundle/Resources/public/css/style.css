@@ -11,3 +11,8 @@
 .note-draggable span.delete {
     float: right;
 }
+
+.notes-dropdown .dropdown-menu {
+    overflow: auto;
+    max-height: 340px;
+}
