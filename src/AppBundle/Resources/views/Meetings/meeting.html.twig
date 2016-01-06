@@ -7,8 +7,10 @@
         <div class="col-md-8 col-md-offset-2">
             <div class="row" style="position:relative;">
                 <h1 class="inline">{{ meeting.name }}</h1>
+                {% if not meeting.finished %}
                 <a href="{{ path('finish_meeting', {id:meeting.id}) }}" style="position:absolute; right: 0; top:20px;"
                    class="btn btn-danger">Finish the meeting</a>
+                {% endif %}
             </div>
             <div class="row">
 
