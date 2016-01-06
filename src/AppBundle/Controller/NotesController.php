@@ -11,8 +11,8 @@ class NotesController extends Controller
 {
 	public function indexAction()
 	{
-		$noteService = $this->get( 'note.service' );
 		$currentUser = $this->getUser();
+		$noteService = $this->get( 'note.service' );
 
 		$notes = $noteService->getAllOrderedByHighestPriority( $currentUser );
 
@@ -31,8 +31,8 @@ class NotesController extends Controller
 				 'msg'    => 'Invalid text'
 			 ] );
 
-		$noteService = $this->get( 'note.service' );
 		$currentUser = $this->getUser();
+		$noteService = $this->get( 'note.service' );
 
 		$note = $noteService->addNote( $currentUser, $text );
 
@@ -48,39 +48,37 @@ class NotesController extends Controller
 		 ] );
 	}
 
+	public function deleteAction( Request $request )
+	{
+		$noteId = $request->request->get( 'noteId' );
+		if( !is_numeric( $noteId ) || $noteId < 1 )
+			return new JsonResponse( [
+				'status' => 'error',
+				'msg'    => 'Invalid note'
+			] );
+
+		$currentUser = $this->getUser();
+		$noteService = $this->get( 'note.service' );
+		$noteService->removeNoteById( $currentUser, $noteId );
+
+		return new JsonResponse( [ 'status' => 'success' ] );
+	}
+
 	public function reorderAction( Request $request )
 	{
-		$reorderId = $request->request->get( 'dragId' );
-		$nextId    = $request->request->get( 'nextId' );
+		$notes  = $request->request->get( 'notes' );
 
-		if( !is_numeric( $reorderId ) || $reorderId < 1 )
+		if( !is_array( $notes ) )
 			return new JsonResponse( [
 				 'status' => 'error',
-				 'msg'    => 'Invalid note for reorder'
+				 'msg'    => 'Invalid notes'
 			 ] );
 
-		if( !is_numeric( $nextId ) )
-			return new JsonResponse( [
-				 'status' => 'error',
-				 'msg'    => 'Invalid note'
-			 ] );
+		$currentUser = $this->getUser();
+		$noteService = $this->get( 'note.service' );
+		$noteService->changePriority( $currentUser, $notes );
 
-		if( $nextId > 0 )
-		{
-			$noteService = $this->get( 'note.service' );
-			$currentUser = $this->getUser();
-			$notes       = $noteService->changePriority( $currentUser, $reorderId, $nextId );
-
-			return new JsonResponse( [
-				 'status' => 'success',
-				 'notes'  => $notes
-			 ] );
-		}
-
-		return new JsonResponse( [
-			 'status' => 'success',
-			 'notes'  => []
-		 ] );
+		return new JsonResponse( [ 'status' => 'success' ] );
 
 	}
 }

@@ -7,29 +7,32 @@ use Doctrine\ORM\EntityRepository;
 
 class NoteRepository extends EntityRepository
 {
-	public function decreasePriorityBetween( $priority, $offset )
+	public function updatePriority( User $user, $noteId, $priority, $flush = false )
 	{
-		return $this->changePriority( $priority, $offset, '-' );
+		$notes = $this->findBy( [
+			'id'   => $noteId,
+			'user' => $user
+		] );
+
+		if( isset($notes[0]) )
+		{
+			$notes[0]->setPriority( $priority );
+			$this->_em->persist( $notes[0] );
+			if( $flush )
+				$this->_em->flush();
+		}
 	}
 
-	public function increasePriorityBetween( $priority, $offset )
+	public function refreshPriority( User $user )
 	{
-		return $this->changePriority( $priority, $offset, '+' );
-	}
+		$notes = $this->findByUserOrderedByPriority( $user, 'ASC' );
+		$notesCount = count( $notes );
 
-	private function changePriority( $priority, $offset, $sign )
-	{
-		if( !in_array( $sign, [ '+', '-' ] ) )
-			return false;
-
-		return $this->getEntityManager()
-					->createQueryBuilder()
-					->update( 'AppBundle:Note', 'n' )
-					->set( 'n.priority', 'n.priority ' . $sign . ' ' . (int)$offset )
-					->where( 'n.priority > :priority' )
-					->setParameter( 'priority', (int)$priority )
-					->getQuery()
-					->execute();
+		foreach( $notes as $key => $n )
+		{
+			$flush = $notesCount == $key + 1;
+			$this->updatePriority($user, $n->getId(), $key + 1, $flush);
+		}
 	}
 
 	public function countAll( User $user )

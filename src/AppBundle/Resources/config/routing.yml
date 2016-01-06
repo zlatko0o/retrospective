@@ -21,6 +21,11 @@ notes_save:
     defaults: { _controller: AppBundle:Notes:save }
     methods: [POST]
 
+notes_delete:
+    path:     /notes/delete
+    defaults: { _controller: AppBundle:Notes:delete }
+    methods: [POST]
+
 notes_reorder:
     path:     /notes/reorder
     defaults: { _controller: AppBundle:Notes:reorder }

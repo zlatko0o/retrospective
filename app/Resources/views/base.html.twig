@@ -48,6 +48,7 @@
                     </li>
                 {% else %}
                     <li class=""><a href="{{ path('create') }}">Create meeting</a></li>
+                    <li class=""><a href="{{ path('notes') }}">Notes</a></li>
                 {% endif %}
             </ul>
             {% if is_granted('ROLE_USER') %}

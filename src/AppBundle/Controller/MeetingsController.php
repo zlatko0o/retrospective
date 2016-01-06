@@ -61,7 +61,10 @@ class MeetingsController extends Controller
 			return $this->redirect( $this->generateUrl( 'index' ) );
 		}
 
+		$notes = $this->get( 'note.service' )->getAllOrderedByHighestPriority( $this->getUser() );
+
 		return $this->render( 'AppBundle:Meetings:meeting.html.twig', [
+			'notes'   => $notes,
 			'meeting' => $meeting,
 			'data'    => $this->getData( $meeting ),
 			'canVote' => $this->getUserVote( $meeting )

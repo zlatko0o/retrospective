@@ -5,6 +5,7 @@
 {% block body %}
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
+            <div class="note-alerts"></div>
             <h1>Notes</h1>
 
             <form id="addNoteForm" method="post" action="{{ path('notes_save') }}">
@@ -25,8 +26,11 @@
     <script type="text/javascript">
         $( '#addNoteForm' ).on( 'submit', function( e ) {
             e.preventDefault();
+            var action_id = 'add-note';
+            removeErrorMessage( action_id );
 
-            var text = $( this ).find( '#noteText' ).val();
+            var noteTextObj = $( this ).find( '#noteText' );
+            var text = noteTextObj.val();
 
             if( $.trim( text ).length < 1 )
                 return false;
@@ -39,6 +43,10 @@
             } ).done( function( response ) {
                 if( response.status == 'success' ) {
                     $( '.note-content' ).prepend( buildListing( [response.note] ) );
+                    noteTextObj.val( '' );
+                }
+                else {
+                    addErrorMessage( action_id, response.msg );
                 }
             } );
         } );
@@ -46,10 +54,24 @@
         function buildListing( notes ) {
             var html = '';
             for( var i = 0; i < notes.length; i++ ) {
-                html += '<div class="note-draggable alert" role="alert" data-id="' + notes[i].id + '">' + notes[i].text + '</div>';
+                html += '<div class="note-draggable alert" role="alert" data-id="' + notes[i].id + '">' + notes[i].text;
+                html += '<span class="delete"><a href="{{ path('notes_delete') }}"><i class="fa fa-remove"></i></a></span></div>';
             }
 
             return html;
+        }
+
+        function addErrorMessage( action_id, msg ) {
+            $( '<div></div>' )
+                            .addClass( 'alert' )
+                            .addClass( 'alert-danger' )
+                            .attr( 'data-action', action_id )
+                            .text( msg )
+                            .appendTo( '.note-alerts' );
+        }
+
+        function removeErrorMessage( action_id ) {
+            $( '.note-alerts .alert' ).remove();
         }
 
         var notes = JSON.parse( '{{ notes|json_encode|escape('js') }}' );
@@ -58,27 +80,58 @@
 
         contentObj.sortable( {
             stop: function( event, ui ) {
-                var data = {};
-                data.dragId = $( ui.item ).attr( 'data-id' );
-                var nextElem = $( ui.item ).next();
-                data.nextId = 0;
-                if( nextElem.length > 0 )
-                    data.nextId = nextElem.attr( 'data-id' );
+                var action_id = 'sort-note';
+                removeErrorMessage( action_id );
+                var notes = [];
+                var notesCount = contentObj.find( '.note-draggable').length;
+
+                contentObj.find( '.note-draggable' ).each( function( index ) {
+                    var node = {};
+                    node.noteId = $( this ).attr('data-id');
+                    node.priority = notesCount - index;
+                    notes.push(node);
+                } );
 
                 $.ajax( {
                     url     : '{{ path('notes_reorder') }}',
                     type    : 'post',
-                    data    : data,
+                    data    : { notes: notes },
+                    dataType: 'json'
+                } ).done( function( response ) {
+                    if( response.status != 'success' ) {
+                        contentObj.sortable( 'cancel' );
+                    }
+                    else {
+                        addErrorMessage( action_id, response.msg );
+                    }
+                } ).fail( function() {
+                    contentObj.sortable( 'cancel' );
+                } );
+            }
+        } );
+
+        $( document ).on( 'click', 'span.delete a', function( e ){
+            e.preventDefault();
+            var action_id = 'remove-note';
+            removeErrorMessage( action_id );
+
+            if( confirm( 'Are you sure you want to remove this note?' ) )
+            {
+                var noteObj = $( this ).closest( '.note-draggable' );
+                var noteId = noteObj.attr( 'data-id' );
+
+                $.ajax( {
+                    url     : $( this ).attr( 'href' ),
+                    type    : 'post',
+                    data    : { noteId: noteId },
                     dataType: 'json'
                 } ).done( function( response ) {
                     if( response.status == 'success' ) {
-                        $( '.note-content' ).prepend( buildListing( [response.note] ) );
+                        noteObj.remove();
                     }
                     else {
-                        contentObj.sortable( 'cancel' );
+                        addErrorMessage( action_id, response.msg );
                     }
-                } ).fail( function( response ) {
-                    contentObj.sortable( 'cancel' );
                 } );
             }
         } );

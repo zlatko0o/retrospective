@@ -31,50 +31,38 @@ class NoteService
 		$this->em   = $em;
 	}
 
-	public function changePriority( User $user, $noteId, $nextId )
+	public function changePriority( User $user, $notes )
 	{
-		//TODO: finish at home
-		/*$newPriority = $this->getNotePriority( $user, $nextId );
-
-		$notes = $this->repo->findBy( [
-			'user' => $user,
-			'id'   => $noteId
-		 ] );
-
-		if( isset($notes[0]) )
+		$notesCount = count( $notes );
+		foreach( $notes as $key => $n )
 		{
-			$oldPriority = $notes[0]->getPriority();
-
-			if( $oldPriority > $newPriority ) // drag down
+			if(isset($n['noteId']) && isset($n['priority'])
+				&& is_numeric($n['noteId']) && is_numeric($n['priority'])
+				&& $n['noteId'] > 0 && $n['priority'] > 0)
 			{
-				$this->repo->increasePriorityBetween( $newPriority, 1 );
+				$flush = $notesCount == $key + 1;
+				$this->repo->updatePriority( $user, $n['noteId'], $n['priority'], $flush );
 			}
-			else if( $oldPriority < $newPriority ) // drag up
-			{
-
-			}
-
-			$notes[0]->setPriority( $newPriority );
-			$this->em->persist( $notes[0] );
-			$this->em->flush();
-		}*/
+		}
 
 		return true;
 	}
 
-	public function removeNoteById( $noteId )
+	public function removeNoteById( User $user, $noteId )
 	{
-		$note = $this->repo->find( $noteId );
+		$notes = $this->repo->findBy( [
+			'user' => $user,
+			'id'   => $noteId
+		] );
 
-		if( $note )
+		if( isset($notes[0]) )
 		{
-			$this->em->remove( $noteId );
+			$this->em->remove( $notes[0] );
 			$this->em->flush();
 
-			$this->repo->decreasePriorityOfHigherThan( $note->getPriority(), 1 );
+			$this->repo->refreshPriority( $user );
 		}
 
-		return true;
 	}
 
 	public function addNote( User $user, $text )

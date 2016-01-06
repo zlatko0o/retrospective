@@ -113,7 +113,15 @@
                 <div class="col-md-4">
                     <div class="panel panel-success">
                         <div class="panel-heading">
-                            <h3 class="panel-title">What we did well? <span class="fa fa-plus pull-right"></span></h3>
+                            <h3 class="panel-title">What we did well?
+                                <div class="notes-dropdown dropdown pull-right">
+                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="didWellNotes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="didWellNotes">
+                                    </ul>
+                                </div>
+                            </h3>
                         </div>
                         <div class="panel-body">
                             <ul class="list-group"
@@ -132,8 +140,15 @@
                 <div class="col-md-4">
                     <div class="panel panel-danger">
                         <div class="panel-heading">
-                            <h3 class="panel-title">What should we have done better? <span
-                                        class="fa fa-plus pull-right"></span></h3>
+                            <h3 class="panel-title">What should we have done better?
+                                <div class="notes-dropdown dropdown pull-right">
+                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="didNotWellNotes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="didNotWellNotes">
+                                    </ul>
+                                </div>
+                            </h3>
                         </div>
                         <div class="panel-body">
                             <ul class="list-group"
@@ -152,8 +167,15 @@
                 <div class="col-md-4">
                     <div class="panel panel-info">
                         <div class="panel-heading">
-                            <h3 class="panel-title">What we did (no judgment) <span
-                                        class="fa fa-plus pull-right"></span></h3>
+                            <h3 class="panel-title">What we did (no judgment)
+                                <div class="notes-dropdown dropdown pull-right">
+                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="justDidNotes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                        <span class="fa fa-plus"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="justDidNotes">
+                                    </ul>
+                                </div>
+                            </h3>
                         </div>
                         <div class="panel-body">
                             <ul class="list-group"
@@ -254,7 +276,43 @@
                 $.get( '/meeting/{{ meeting.id }}/data', function( response ) {
                     fillData( response.data );
                 } );
-            }, 2000 )
-        } )
+            }, 2000 );
+
+            $( '.notes-dropdown .dropdown-menu li a' ).on( 'click', function( e ) {
+                e.preventDefault();
+
+                var type = $( this ).closest( '.panel' ).find( '.panel-body .addJob').attr( 'data-type' );
+                var text = $( this ).text();
+                var noteId = $( this ).attr( 'data-id' );
+                var a =  $( '.notes-dropdown .dropdown-menu li a[data-id="' + noteId + '"]' );
+
+                $.post( '/meeting/{{ meeting.id }}/job/' + type, {'text': text}, function( data ) {
+                    fillData( data.data );
+
+                    $.post( '{{ path('notes_delete') }}', { noteId: noteId },  function( response ) {
+                        if( response.status == 'success' ) {
+                            a.each( function() {
+                                $( this ).closest( 'li' ).remove();
+                            } );
+                        }
+                    } );
+                } );
+            } );
+        } );
+
+        function fillNotesDropdown( notes )
+        {
+            var html = '';
+            for( var i = 0; i < notes.length; i++ )
+            {
+                html += '<li><a href="#" data-id="' + notes[i].id + '">' + notes[i].text + '</a></li>';
+            }
+
+            $( '.notes-dropdown .dropdown-menu' ).html( html );
+        }
+
+        var notes = JSON.parse( '{{ notes|json_encode|escape('js') }}' );
+        fillNotesDropdown( notes );
+
     </script>
 {% endblock %}
