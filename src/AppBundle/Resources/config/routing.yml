@@ -61,8 +61,12 @@ add_vote:
 
 
 add_action:
-    path:     /meeting/{id}/vote
+    path:     /meeting/{id}/action
     defaults: { _controller: AppBundle:Meetings:addAction }
+
+check_action:
+    path:     /meeting/{id}/action/{actionId}/change
+    defaults: { _controller: AppBundle:Meetings:checkAction }
 
 
 

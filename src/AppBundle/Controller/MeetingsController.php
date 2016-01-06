@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Action;
 use AppBundle\Entity\Invitation;
 use AppBundle\Entity\JobDone;
 use AppBundle\Entity\Meeting;
@@ -96,7 +97,7 @@ class MeetingsController extends Controller
 		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
 	}
 
-	public function addActionAction( Request $request, $id, $type )
+	public function addActionAction( Request $request, $id )
 	{
 		$em = $this->getDoctrine()->getManager();
 
@@ -108,15 +109,35 @@ class MeetingsController extends Controller
 
 		if( $text )
 		{
-			$job = new JobDone();
-			$job->setText( $text );
-			$job->setType( $type );
-			$job->setMeeting( $meeting );
+			$a = new Action();
+			$a->setMeeting( $meeting );
+			$a->setText( $text );
+			$a->setChecked( false );
 
-			$em->persist( $job );
+			$em->persist( $a );
 			$em->flush();
 			$em->clear();
 		}
+
+		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
+	}
+
+	public function checkActionAction( Request $request, $id, $actionId )
+	{
+		$em = $this->getDoctrine()->getManager();
+
+		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
+		if( !$meeting || $meeting->getFinished() )
+			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
+
+		$action = $em->getRepository( 'AppBundle:Action' )->find( $actionId );
+		if( !$action )
+			return new JsonResponse( [ 'meessage' => 'Invalid action' ] );
+
+		$action->setChecked( (bool)$request->request->get( 'checked', false ) );
+		$em->persist( $action );
+		$em->flush();
+		$em->clear();
 
 		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
 	}
@@ -180,12 +201,13 @@ class MeetingsController extends Controller
 			$votes[ $sf->getLevel() ]++;
 		}
 
-		$return['votes'] = $votes;
-		$return['actions'] = [];
-		$actions = $meeting->getActions();
+		$return['votes']   = $votes;
+		$return['actions'] = [ ];
+		$actions           = $meeting->getActions();
 
-		foreach($actions as $action){
-			$return['actions'][] = $action->getText();
+		foreach( $actions as $action )
+		{
+			$return['actions'][] = [ 'id' => $action->getId(), 'checked' => $action->getChecked(), 'text' => $action->getText() ];
 		}
 
 		return $return;

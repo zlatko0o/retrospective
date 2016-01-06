@@ -115,7 +115,9 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">What we did well?
                                 <div class="notes-dropdown dropdown pull-right">
-                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="didWellNotes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                                            id="didWellNotes" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="true">
                                         <span class="fa fa-plus"></span>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="didWellNotes">
@@ -142,7 +144,9 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">What should we have done better?
                                 <div class="notes-dropdown dropdown pull-right">
-                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="didNotWellNotes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                                            id="didNotWellNotes" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="true">
                                         <span class="fa fa-plus"></span>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="didNotWellNotes">
@@ -169,7 +173,9 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">What we did (no judgment)
                                 <div class="notes-dropdown dropdown pull-right">
-                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button" id="justDidNotes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                    <button class="btn btn-xs btn-default dropdown-toggle" type="button"
+                                            id="justDidNotes" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="true">
                                         <span class="fa fa-plus"></span>
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="justDidNotes">
@@ -202,10 +208,16 @@
                         </div>
                         <div class="panel-body">
                             <div id="actions">
-                                <ul class="list-group"></ul>
-                                {% for action in data['actions'] %}
-                                    <li class="list-group-item">{{ action }}</li>
-                                {% endfor %}
+                                <ul class="list-group" id="action-list">
+                                    {% for action in data['actions'] %}
+                                        <li class="list-group-item">
+                                            <input type="checkbox"
+                                                   class="action-checkbox" {% if action.checked %} checked {% endif %}
+                                                   data-action-id="{{ action.id }}">
+                                            {{ action.text }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
                             </div>
                             <input type="text" class="form-control addAction"
                                    data-type="{{ constant('AppBundle\\Entity\\JobDone::TYPE_NEUTRAL') }}">
@@ -217,6 +229,19 @@
     </div>
 
     <script>
+
+        function onActionChange( e ) {
+            e.stopPropagation();
+            var id = $( this ).attr( 'data-action-id' );
+            console.log( id );
+            console.log( this );
+            var val = $( this ).is( ':checked' ) ? 1 : 0;
+            $.post( '/meeting/{{ meeting.id }}/action/' + id + '/change', {checked: val}, function( response ) {
+                fillData( response.data );
+            } )
+        }
+
+        $( '.action-checkbox' ).change( onActionChange );
 
         function fillData( data ) {
             for( var type in data['jobs'] ) {
@@ -232,6 +257,25 @@
                     }
                 }
             }
+
+            var container = $( '#action-list' );
+            container.html( '' );
+            for( var action in data['actions'] ) {
+                if( data['actions'].hasOwnProperty( action ) ) {
+                    var elm = $( '<li class="list-group-item"> </li>' );
+                    if( data["actions"][action]['checked'] )
+                        elm.append( '<input type="checkbox" class="action-checkbox" checked data-action-id="' + data["actions"][action]['id'] + '"> ' );
+                    else
+                        elm.append( '<input type="checkbox" class="action-checkbox" data-action-id="' + data["actions"][action]['id'] + '"> ' );
+
+                    var textElement = $( '<span></span>' );
+                    textElement.text( data["actions"][action]['text'] );
+                    elm.append( textElement );
+                    container.append( elm );
+                }
+            }
+            $( '.action-checkbox' ).change( onActionChange );
+
             for( var level in data['votes'] ) {
                 if( data['votes'].hasOwnProperty( level ) ) {
                     $( '#vote-numbers-' + level ).html( data['votes'][level] );
@@ -252,12 +296,11 @@
                 }
             } );
 
-
             $( '.addAction' ).keyup( function( e ) {
                 var that = $( this );
                 if( e.keyCode == 13 ) {
                     var type = $( this ).data( 'type' );
-                    $.post( '/meeting/{{ meeting.id }}/action',{'text': that.val()}, function( data ) {
+                    $.post( '/meeting/{{ meeting.id }}/action', {'text': that.val()}, function( data ) {
                         that.val( '' );
                         fillData( data.data );
                     } );
@@ -281,15 +324,15 @@
             $( '.notes-dropdown .dropdown-menu li a' ).on( 'click', function( e ) {
                 e.preventDefault();
 
-                var type = $( this ).closest( '.panel' ).find( '.panel-body .addJob').attr( 'data-type' );
+                var type = $( this ).closest( '.panel' ).find( '.panel-body .addJob' ).attr( 'data-type' );
                 var text = $( this ).text();
                 var noteId = $( this ).attr( 'data-id' );
-                var a =  $( '.notes-dropdown .dropdown-menu li a[data-id="' + noteId + '"]' );
+                var a = $( '.notes-dropdown .dropdown-menu li a[data-id="' + noteId + '"]' );
 
                 $.post( '/meeting/{{ meeting.id }}/job/' + type, {'text': text}, function( data ) {
                     fillData( data.data );
 
-                    $.post( '{{ path('notes_delete') }}', { noteId: noteId },  function( response ) {
+                    $.post( '{{ path('notes_delete') }}', {noteId: noteId}, function( response ) {
                         if( response.status == 'success' ) {
                             a.each( function() {
                                 $( this ).closest( 'li' ).remove();
@@ -300,11 +343,9 @@
             } );
         } );
 
-        function fillNotesDropdown( notes )
-        {
+        function fillNotesDropdown( notes ) {
             var html = '';
-            for( var i = 0; i < notes.length; i++ )
-            {
+            for( var i = 0; i < notes.length; i++ ) {
                 html += '<li><a href="#" data-id="' + notes[i].id + '">' + notes[i].text + '</a></li>';
             }
 
