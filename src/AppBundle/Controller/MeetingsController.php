@@ -56,7 +56,7 @@ class MeetingsController extends Controller
 		$em = $this->getDoctrine()->getManager();
 
 		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
-		if( !$meeting || $meeting->getFinished() )
+		if( !$meeting )
 			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
 
 		$meeting->setFinished( true );
@@ -95,7 +95,7 @@ class MeetingsController extends Controller
 		$em = $this->getDoctrine()->getManager();
 
 		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
-		if( !$meeting || $meeting->getFinished() )
+		if( !$meeting )
 			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
 
 		$text = $request->request->get( 'text', false );
@@ -120,7 +120,7 @@ class MeetingsController extends Controller
 		$em = $this->getDoctrine()->getManager();
 
 		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
-		if( !$meeting || $meeting->getFinished() )
+		if( !$meeting )
 			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
 
 		$text = $request->request->get( 'text', false );
@@ -145,7 +145,7 @@ class MeetingsController extends Controller
 		$em = $this->getDoctrine()->getManager();
 
 		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
-		if( !$meeting || $meeting->getFinished() )
+		if( !$meeting  )
 			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
 
 		$action = $em->getRepository( 'AppBundle:Action' )->find( $actionId );
@@ -165,7 +165,7 @@ class MeetingsController extends Controller
 		$em = $this->getDoctrine()->getManager();
 
 		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
-		if( !$meeting || $meeting->getFinished() )
+		if( !$meeting  )
 			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
 
 		if( $this->getUserVote( $meeting ) )
@@ -188,7 +188,7 @@ class MeetingsController extends Controller
 		$em = $this->getDoctrine()->getManager();
 
 		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
-		if( !$meeting || $meeting->getFinished() )
+		if( !$meeting )
 			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
 
 		return new JsonResponse( [ 'data' => $this->getData( $meeting ) ] );
@@ -198,6 +198,7 @@ class MeetingsController extends Controller
 	{
 		$jobs   = $meeting->getJobDone();
 		$return = [ ];
+		$return['jobs'] = [];
 
 		foreach( $jobs as $job )
 		{
