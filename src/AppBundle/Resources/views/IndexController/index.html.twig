@@ -103,8 +103,28 @@
         function getLastNotifications( id )
         {
             var obj = $( '.dbblock[data-id="' + id + '"]' );
-            var title = 'Actions';
-            var iconClass = '';
+            var title = 'Last Notifications';
+            var iconClass = 'fa fa-bell';
+
+            $.get( '{{ path('dashboard_last_notifications') }}', {}, function( response ) {
+                var content = '';
+                if( response.data.length == 0 )
+                {
+                    content = '<p class="text-center"> No notifications! </p>';
+                }
+                else
+                {
+                    for( var i = 0; i < response.data.length; i++ )
+                    {
+                        content += '<input type="checkbox" ' + checked + ' disabled="disabled" />&nbsp;&nbsp;';
+                        content += '<span data-id="' + response.data[i]['id'] + '">' + response.data[i]['text'] + '</span> - ';
+                        content += '<a href="/meeting/' + response.data[i]['meeting_id'] + '">' + response.data[i]['meeting_name'] + '</a>';
+                        content += '<br />';
+                    }
+                }
+
+                obj.html( buildPanel( title, iconClass, content ) );
+            } );
         }
 
         function getActions( id )
