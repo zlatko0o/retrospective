@@ -5,13 +5,21 @@
 {% block body %}
 <h1>Dashboard</h1>
 <div class="row">
-    <div class="col-lg-8">
-        <div class="dbblock" data-id="1"></div>
-        <div class="dbblock" data-id="2"></div>
+    <div id="wide-widget-area" class="col-lg-8">
+        <div class="dbblock" data-id="1">
+            <div class="dbblock-content"></div>
+        </div>
+        <div class="dbblock" data-id="2">
+            <div  class="dbblock-content"></div>
+        </div>
     </div>
-    <div class="col-lg-4">
-        <div class="dbblock" data-id="3"></div>
-        <div class="dbblock" data-id="4"></div>
+    <div id="narrow-widget-area" class="col-lg-4">
+        <div class="dbblock" data-id="3">
+            <div  class="dbblock-content"></div>
+        </div>
+        <div class="dbblock" data-id="4">
+            <div  class="dbblock-content"></div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -129,7 +137,7 @@
 
         function getActions( id )
         {
-            var obj = $( '.dbblock[data-id="' + id + '"]' );
+            var obj = $( '.dbblock[data-id="' + id + '"] .dbblock-content' );
             var title = 'Actions';
             var iconClass = 'fa fa-pencil';
 
@@ -147,7 +155,7 @@
                             ? 'checked="checked"'
                             : '';
 
-                        content += '<input type="checkbox" ' + checked + ' disabled="disabled" />&nbsp;&nbsp;';
+                        content += '<input data-meeting-id="' + response.data[i]['meeting_id'] + '" data-id="' + response.data[i]['id'] + '" class="action-check" type="checkbox" ' + checked + ' />&nbsp;&nbsp;';
                         content += '<span data-id="' + response.data[i]['id'] + '">' + response.data[i]['text'] + '</span> - ';
                         content += '<a href="/meeting/' + response.data[i]['meeting_id'] + '">' + response.data[i]['meeting_name'] + '</a>';
                         content += '<br />';
@@ -158,9 +166,35 @@
             } );
         }
 
+        $( document ).on( 'click', '.action-check', function( e ) {
+            e.stopPropagation();
+
+            var checkbox = $( this );
+            var id = checkbox.attr( 'data-id' );
+            var meeting_id = checkbox.attr( 'data-meeting-id' );
+            var val = checkbox.is( ':checked' ) ? 1 : 0;
+            $.post( '/meeting/' + meeting_id + '/action/' + id + '/change', {checked: val}, function( response ) {
+                if( typeof response.data == 'undefined' )
+                    checkbox.val(!val);
+            } );
+        } );
+
         getActions(1);
         getLastRetrospectives(2);
         getTeammates(3);
         getLastNotifications(4);
+
+        /*$( '#wide-widget-area, #narrow-widget-area' ).sortable( {
+            connectWith: '.dbblock-content',
+            handle: '.panel-heading',
+            placeholder: "dbblock-placeholder"
+        } ).on( "sortstart", function( event, ui ) {
+            var height = $( ui.item ).height();
+
+            var width = $( ui.item ).find( '.dbblock-placeholder' ).width();
+
+            $( '.dbblock-placeholder' ).css( 'height', height );
+            //$( ui.item ).find( '.ui-sortable-helper' ).css( 'width', width );
+        } );*/
     </script>
 {% endblock %}
