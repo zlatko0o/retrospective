@@ -71,10 +71,10 @@ class IndexController extends Controller
 			foreach( $data as $key => $meeting )
 			{
 				$returnData[$key]['id']              = $meeting->getId();
-				$returnData[$key]['name']            = $meeting->getName();
+				$returnData[$key]['name']            = strip_tags( $meeting->getName() );
 				$returnData[$key]['date']            = $meeting->getDate();
 				$returnData[$key]['finished']        = $meeting->getFinished();
-				$returnData[$key]['author_username'] = $meeting->getAuthor()->getUsername();
+				$returnData[$key]['author_username'] = strip_tags( $meeting->getAuthor()->getUsername() );
 			}
 		}
 
@@ -125,9 +125,9 @@ class IndexController extends Controller
 				$returnData[$key]['id']               = $action->getId();
 				$returnData[$key]['checked']          = $action->getChecked();
 				$meeting                              = $action->getMeeting();
-				$returnData[$key]['meeting_id']      = $meeting->getId();
-				$returnData[$key]['meeting_name']    = $meeting->getName();
-				$returnData[$key]['text']             = $action->getText();
+				$returnData[$key]['meeting_id']       = $meeting->getId();
+				$returnData[$key]['meeting_name']     = strip_tags( $meeting->getName() );
+				$returnData[$key]['text']             = strip_tags( $action->getText() );
 			}
 		}
 
