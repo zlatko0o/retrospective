@@ -2,10 +2,25 @@ index:
     path:     /
     defaults: { _controller: AppBundle:Index:index }
 
+dashboard_teammates:
+    path:     /dashboard/teammates
+    defaults: { _controller: AppBundle:Index:getTeammates }
+
+dashboard_last_retrospectives:
+    path:     /dashboard/last-retrospectives
+    defaults: { _controller: AppBundle:Index:getLastRetrospectives }
+
+dashboard_last_notifications:
+    path:     /dashboard/last-notifications
+    defaults: { _controller: AppBundle:Index:getLastNotifications }
+
+dashboard_actions:
+    path:     /dashboard/actions
+    defaults: { _controller: AppBundle:Index:getActions }
+
 create:
     path:     /meeting/create
     defaults: { _controller: AppBundle:Meetings:create }
-
 
 meeting:
     path:     /meeting/{id}

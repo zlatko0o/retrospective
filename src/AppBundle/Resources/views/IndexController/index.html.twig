@@ -6,47 +6,127 @@
 <h1>Dashboard</h1>
 <div class="row">
     <div class="col-lg-8">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Last Retrospectives
-                {#<div class="pull-right">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                            Actions
-                            <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu pull-right" role="menu">
-                            <li><a href="#">Action</a>
-                            </li>
-                            <li><a href="#">Another action</a>
-                            </li>
-                            <li><a href="#">Something else here</a>
-                            </li>
-                            <li class="divider"></li>
-                            <li><a href="#">Separated link</a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>#}
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
-
-            </div>
-            <!-- /.panel-body -->
-        </div>
+        <div class="dbblock" data-id="1"></div>
+        <div class="dbblock" data-id="2"></div>
     </div>
     <div class="col-lg-4">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <i class="fa fa-bar-chart-o fa-fw"></i> Teammates
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
-
-            </div>
-            <!-- /.panel-body -->
-        </div>
+        <div class="dbblock" data-id="3"></div>
+        <div class="dbblock" data-id="4"></div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        function buildPanel( title, iconClass, content )
+        {
+            return $( '<div></div>' ).append(
+                    $( '<div></div>' ).append(
+                            $( '<span></span>' ).text( title ),
+                            $( '<i></i>' ).addClass( 'fa' ).addClass( iconClass ).addClass( 'fa-fw' )
+                    ).addClass( 'panel-heading' ),
+                    $( '<div></div>' ).html( content ).addClass( 'panel-body' )
+            ).addClass( 'panel' ).addClass( 'panel-default' );
+        }
+
+        function getTeammates( id )
+        {
+            var obj = $( '.dbblock[data-id="' + id + '"]' );
+            var title = 'Teammates';
+            var iconClass = '';
+
+            $.get( '{{ path('dashboard_teammates') }}', {}, function( response ) {
+                var content = '';
+                if( response.data.length == 0 )
+                {
+                    content = '<p class="text-center"> No teammates! </p>';
+                }
+                else
+                {
+                    content += '<h4 data-id="' + response.data.team['id'] + '">Team: ' + response.data.team['name'] + '</h4>';
+
+                    if( typeof response.data.users != 'undefined' )
+                    {
+                        if( response.data.users.length == 0 )
+                            content += '<p class="text-center"> No teammates in your team! </p>';
+                        else
+                        {
+                            for( var i = 0; i < response.data.users.length; i++ )
+                            {
+                                content += '<span data-id="' + response.data.users[i]['id'] + '">' + response.data.users[i]['username'] + '&nbsp;(' + response.data.users[i]['email'] + ')</span>';
+                            }
+                        }
+                    }
+                }
+
+                obj.html( buildPanel( title, iconClass, content ) );
+            } );
+        }
+
+        function getLastRetrospectives( id )
+        {
+            var obj = $( '.dbblock[data-id="' + id + '"]' );
+            var title = 'Last Retrospectives';
+            var iconClass = '';
+
+            $.get( '{{ path('dashboard_last_retrospectives') }}', {}, function( response ) {
+                var content = '';
+                if( response.data.length == 0 )
+                {
+                    content = '<p class="text-center"> No retrospectives! </p>';
+                }
+                else
+                {
+                    for( var i = 0; i < response.data.length; i++ )
+                    {
+                        content += '<a href="/meeting/' + response.data[i]['id'] + '">' + response.data[i]['name'] + '</a>';
+                        content += ' - author: ' + response.data[i]['author_username'];
+                        content += response.data[i]['finished'] ? ' - finished' : '';
+                    }
+                }
+
+                obj.html( buildPanel( title, iconClass, content ) );
+            } );
+        }
+
+        function getLastNotifications()
+        {
+
+        }
+
+        function getActions(id)
+        {
+            var obj = $( '.dbblock[data-id="' + id + '"]' );
+            var title = 'Actions';
+            var iconClass = '';
+
+            $.get( '{{ path('dashboard_actions') }}', {}, function( response ) {
+                var content = '';
+                if( response.data.length == 0 )
+                {
+                    content = '<p class="text-center"> No actions! </p>';
+                }
+                else
+                {
+                    for( var i = 0; i < response.data.length; i++ )
+                    {
+                        var checked = response.data[i]['checked']
+                            ? 'checked="checked"'
+                            : '';
+
+                        content += '<input type="checkbox" ' + checked + ' disabled="disabled" />&nbsp;&nbsp;';
+                        content += '<span data-id="' + response.data[i]['id'] + '">' + response.data[i]['text'] + '</span> - ';
+                        content += '<a href="/meeting/' + response.data[i]['meeting_id'] + '">' + response.data[i]['meeting_name'] + '</a>';
+                    }
+                }
+
+                obj.html( buildPanel( title, iconClass, content ) );
+            } );
+        }
+
+        getActions(1);
+        getLastRetrospectives(2);
+        getTeammates(3);
+    </script>
 {% endblock %}

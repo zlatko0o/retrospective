@@ -2,6 +2,7 @@
 
 namespace AppBundle\Repository;
 
+use AppBundle\Entity\Team;
 use AppBundle\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
@@ -27,14 +28,20 @@ class MeetingRepository extends EntityRepository
 	/**
 	 * Get last Meetings
 	 *
+	 * @param Team $team
 	 * @param int $num
 	 * @return array
 	 */
-	public function getLastMeetings( $num )
+	public function getLastMeetings( Team $team, $num )
 	{
 		return $this->getEntityManager()
 					->createQueryBuilder()
-					->orderBy( 'date', 'DESC' )
+					->select( 'm' )
+					->from( 'AppBundle:Meeting', 'm' )
+					->join( 'm.author', 'u' )
+					->where( 'u.team = :team' )
+					->setParameter( 'team', $team )
+					->orderBy( 'm.date', 'DESC' )
 					->setMaxResults( (int)$num )
 					->getQuery()
 					->getResult();

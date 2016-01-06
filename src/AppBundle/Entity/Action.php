@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Action
  * @ORM\Entity
  * @ORM\Table(name="actions")
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\ActionRepository")
  */
 class Action
 {
@@ -21,7 +22,7 @@ class Action
 
 	/**
 	 * @var boolean
-	 * @ORM\Column(name="is_deleted", type="boolean")
+	 * @ORM\Column(name="checked", type="boolean")
 	 */
 	protected $checked;
 
