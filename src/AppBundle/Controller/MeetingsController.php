@@ -51,6 +51,24 @@ class MeetingsController extends Controller
 		return $this->render( 'AppBundle:Meetings:create.html.twig', [ 'errors' => $errors ] );
 	}
 
+	public function finishAction( Request $request, $id )
+	{
+		$em = $this->getDoctrine()->getManager();
+
+		$meeting = $em->getRepository( 'AppBundle:Meeting' )->find( $id );
+		if( !$meeting || $meeting->getFinished() )
+			return new JsonResponse( [ 'meessage' => 'Invalid meeting' ] );
+
+		$meeting->setFinished( true );
+
+		$em->persist( $meeting );
+		$em->flush();
+		$em->clear();
+
+		return $this->redirect( $this->generateUrl( 'index' ) );
+
+	}
+
 	public function meetingAction( Request $request, $id )
 	{
 		$em = $this->getDoctrine()->getManager();

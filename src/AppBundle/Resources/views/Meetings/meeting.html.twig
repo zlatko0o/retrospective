@@ -5,8 +5,11 @@
 {% block body %}
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
-            <h1>{{ meeting.name }}</h1>
-
+            <div class="row" style="position:relative;">
+                <h1 class="inline">{{ meeting.name }}</h1>
+                <a href="{{ path('finish_meeting', {id:meeting.id}) }}" style="position:absolute; right: 0; top:20px;"
+                   class="btn btn-danger">Finish the meeting</a>
+            </div>
             <div class="row">
 
                 <div class="col-md-6">
@@ -233,8 +236,6 @@
         function onActionChange( e ) {
             e.stopPropagation();
             var id = $( this ).attr( 'data-action-id' );
-            console.log( id );
-            console.log( this );
             var val = $( this ).is( ':checked' ) ? 1 : 0;
             $.post( '/meeting/{{ meeting.id }}/action/' + id + '/change', {checked: val}, function( response ) {
                 fillData( response.data );

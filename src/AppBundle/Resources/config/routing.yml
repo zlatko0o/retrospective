@@ -68,6 +68,10 @@ check_action:
     path:     /meeting/{id}/action/{actionId}/change
     defaults: { _controller: AppBundle:Meetings:checkAction }
 
+finish_meeting:
+    path:     /meeting/{id}/finish
+    defaults: { _controller: AppBundle:Meetings:finish }
+
 
 
 
